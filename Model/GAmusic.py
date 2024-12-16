@@ -2,7 +2,7 @@ import random
 
 class GAmusic:
     def __init__(self,populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,
-                 Flag_C,selectionRatio,mutationRatio,maxIter,fitness_Iter,fitness_Final,fitnessFunction):
+                 Flag_C,mutationRatio,crossoverRatio,maxIter,fitness_Iter,fitness_Final,fitnessFunction):
         self.populationSize = populationSize
         self.individualLength = individualLength
         
@@ -11,9 +11,9 @@ class GAmusic:
         self.Flag_I = Flag_I
         self.Flag_R = Flag_R
         self.Flag_C = Flag_C
-        
-        self.selectionRatio = selectionRatio
+
         self.mutationRatio = mutationRatio
+        self.crossoverRatio = crossoverRatio
         self.maxIter = maxIter
         
         self.fitness_Iter = fitness_Iter
@@ -34,8 +34,15 @@ class GAmusic:
     def run(self,maxIter):
         for i in range(maxIter):
             self.iterate()
+            if self.Fitness_A(self.population[0]) > self.fitness_Final: # fitness达到阈值, 提前终止
+                break
     
     def iterate(self):
+        # Duplication: 高于fitness_Iter的个体复制到下一代
+        for n in range(self.populationSize):
+            if self.Fitness_A(self.population[n]) > self.fitness_Iter:
+                self.population.append(self.population[n])
+        
         if Flag_M:
             self.mutation()
         if Flag_C:
@@ -50,10 +57,29 @@ class GAmusic:
         self.selection()
     
     # 直接在self.population上操作
-    def crossover(self):
-        return
     def mutation(self):
+        for i in range(self.populationSize):
+            if random.random() < self.mutationRatio: # 一次只突变一个音符
+                self.population[i][random.randint(0,self.individualLength-1)] = random.randint(0,17)
         return
+    
+    def crossover(self): 
+        # 以长度为8的段落为单位进行交叉(原本每个个体有32个音符)
+        for i in range(self.populationSize):
+            individual = self.population[i]
+            segments = [individual[j:j+8] for j in range(0, self.individualLength, 8)]
+            for j in range(i+1, self.populationSize): 
+                if random.random() < self.crossoverRatio:
+                    individual2 = self.population[j]
+                    segments2 = [individual2[k:k+8] for k in range(0, self.individualLength, 8)]
+                    for m in range(4): # 所有段落以50%的概率交换
+                        if random.random() < 0.5:
+                            segments[m],segments2[m] = segments2[m],segments[m]
+                    # flatten:
+                    self.population[i] = [note for segment in segments for note in segment]
+                    self.population[j] = [note for segment in segments2 for note in segment]
+        return
+    
     def transposition(self):
         return
     def inversion(self):

@@ -13,8 +13,8 @@ def main():
     parser.add_argument('Flag-R', type=int, help='Do retrograde or not.(1 for yes, 0 for no)')
     parser.add_argument('Flag-C', type=int, help='Do crossover or not.(1 for yes, 0 for no)')
     
-    parser.add_argument('selectionRatio', type=float, help='The selection strength during iteration.')
     parser.add_argument('mutationRatio', type=float, help='The mutation strength during iteration.')
+    parser.add_argument('crossoverRatio', type=float, help='The crossover strength during iteration.')
     parser.add_argument('maxIter', type=int, help='The maximum number of iterations.')
     
     parser.add_argument('fitness_Iter', type=float, help='The fitness threshold for selection process.')
@@ -45,9 +45,11 @@ def main():
     print('Argument passing finished.')
     
     GA = GAmusic(populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,
-                 Flag_C,selectionRatio,mutationRatio,maxIter,fitness_Iter,fitness_Final,fitnessFunction)
+                 Flag_C,mutationRatio,crossoverRatio,maxIter,fitness_Iter,fitness_Final,fitnessFunction)
     
     GA.run(maxIter)
+    
+    # Output:
     
 if __name__ == '__main__':
     main()
