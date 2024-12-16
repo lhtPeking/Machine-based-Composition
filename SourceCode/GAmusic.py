@@ -1,10 +1,10 @@
 import random
 
 class GAmusic:
-    def __init__(self,population_size,pitch_set_size,pitch_set_mapping,individual_length):
-        self.population_size = population_size
+    def __init__(self,populationSize,pitchSetSize,Flag_M,Flag_T,Flag_I,Flag_R,
+                 Flag_C,selectionRatio,mutationRatio,maxIter):
+        self.populationSize = populationSize
         self.pitch_set_size = pitch_set_size
-        self.pitch_set_mapping = pitch_set_mapping
         self.individual_length = individual_length
         self.initial_population = self.random_initial_population()
         self.population = self.initial_population[:]
@@ -20,6 +20,7 @@ class GAmusic:
             self.iterate()
     
     def iterate(self):
+        if
         self.mutation()
         self.transposition()
         self.inversion()
@@ -42,5 +43,7 @@ class GAmusic:
     # 从经过操作的扩大的population选出大小为self.population_size的子集作为新的population
     def selection(self):
         return
-    def fitness(self,individual):
+    def Fitness_A(self,individual):
+        return
+    def Fitness_B(self,individual):
         return
