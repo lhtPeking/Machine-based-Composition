@@ -20,12 +20,17 @@ class GAmusic:
             self.iterate()
     
     def iterate(self):
-        if
-        self.mutation()
-        self.transposition()
-        self.inversion()
-        self.retrograde()
-        self.crossover()
+        if Flag_M:
+            self.mutation()
+        if Flag_T:
+            self.transposition()
+        if Flag_I:
+            self.inversion()
+        if Flag_R:
+            self.retrograde()
+        if Flag_C:
+            self.crossover()
+            
         self.selection()
     
     # 直接在self.population上操作
