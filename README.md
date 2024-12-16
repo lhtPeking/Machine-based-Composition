@@ -1,1 +1,1 @@
-The group assignment of Music and Mathematics.
+# Genetic-Algorithm-Based Stochasitic Composition
