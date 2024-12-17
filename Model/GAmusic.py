@@ -27,8 +27,8 @@ class GAmusic:
     def random_initial_population(self):
         group = []
         for i in range(self.population_size):
-            # 跨两个八度, 0作为休止符, 1-16作为音符, 17为延音符 
-            group.append(random.choices(range(18),k=self.individualLength))
+            # 跨两个八度, 0作为休止符, 1-24作为音符, 25为延音符 
+            group.append(random.choices(range(26),k=self.individualLength))
         return group
     
     def run(self,maxIter):
@@ -60,7 +60,7 @@ class GAmusic:
     def mutation(self):
         for i in range(self.populationSize):
             if random.random() < self.mutationRatio: # 一次只突变一个音符
-                self.population[i][random.randint(0,self.individualLength-1)] = random.randint(0,17)
+                self.population[i][random.randint(0,self.individualLength-1)] = random.randint(0,25)
         return
     
     def crossover(self): 
