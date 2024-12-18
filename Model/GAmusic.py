@@ -1,4 +1,5 @@
 import random
+from utils import Mapping, Heatmap, DR
 
 class GAmusic:
     def __init__(self,populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,
@@ -21,8 +22,9 @@ class GAmusic:
         
         self.initialPopulation = self.random_initial_population()
         self.population = self.initial_population[:]
+        self.populationRecord[0] = [self.population[:]]
         
-        self.fitnessFunction = fitnessFunction
+        self.fitnessFunction = fitnessFunction        
 
     def random_initial_population(self):
         group = []

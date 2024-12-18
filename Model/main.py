@@ -1,6 +1,8 @@
 import argparse
 from GAmusic import GAmusic
 
+# 有几个可以研究的方面：1、不同fitness函数的选取 2、不同的变异、交叉、选择策略
+# 研究的参数指标：1、达到要求的迭代次数 2、可视化的fitness热图 3、20个个体的最终降维表示(多样性评价)
 def main():
     parser = argparse.ArgumentParser(description='A Genetic Algorithm for Music Composition.')
     
