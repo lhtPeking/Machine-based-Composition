@@ -151,19 +151,19 @@ class GAmusic:
     
     ############################## Fitness Functions ##############################
     def Fitness(self,individual): # 加权
-        return self.Fitness_AvoidBigDurationChange(individual) * self.fitnessWeights[0]\
-                +self.Fitness_AvoidBigFluctuation(individual) * self.fitnessWeights[1]\
-                +self.Fitness_AvoidBigInterval(individual) * self.fitnessWeights[2]\
-                +self.Fitness_AvoidContinueUpOrDown(individual) * self.fitnessWeights[3]\
-                +self.Fitness_AvoidNoChange(individual) * self.fitnessWeights[4]\
-                +self.Fitness_AvoidNoteRepetition(individual) * self.fitnessWeights[5]\
-                +self.Fitness_AvoidSyncopation(individual) * self.fitnessWeights[6]\
-                +self.Fitness_AvoidUnpreferredPitch(individual) * self.fitnessWeights[7]\
-                +self.Fitness_GoodInterval(individual) * self.fitnessWeights[8]\
-                +self.Fitness_KeepInAnOctave(individual) * self.fitnessWeights[9]\
-                +self.Fitness_LocalChange(individual) * self.fitnessWeights[10]\
-                +self.Fitness_SimilarityBetweenBars(individual) * self.fitnessWeights[11]\
-                +self.Fitness_NormalStart(individual) * self.fitnessWeights[12]
+        return self.Fitness_NormalStart(individual) * self.fitnessWeights[0]\
+                +self.Fitness_AvoidUnpreferredPitch(individual) * self.fitnessWeights[1]\
+                +self.Fitness_AvoidSyncopation(individual) * self.fitnessWeights[2]\
+                +self.Fitness_AvoidBigInterval(individual) * self.fitnessWeights[3]\
+                +self.Fitness_GoodInterval(individual) * self.fitnessWeights[4]\
+                +self.Fitness_AvoidBigFluctuation(individual) * self.fitnessWeights[5]\
+                +self.Fitness_AvoidContinueUpOrDown(individual) * self.fitnessWeights[6]\
+                +self.Fitness_AvoidNoteRepetition(individual) * self.fitnessWeights[7]\
+                +self.Fitness_AvoidNoChange(individual) * self.fitnessWeights[8]\
+                +self.Fitness_LocalChange(individual) * self.fitnessWeights[9]\
+                +self.Fitness_AvoidBigDurationChange(individual) * self.fitnessWeights[10]\
+                +self.Fitness_KeepInAnOctave(individual) * self.fitnessWeights[11]\
+                +self.Fitness_SimilarityBetweenBars(individual) * self.fitnessWeights[12]
     
     def Fitness_NormalStart(self,individual):
         if individual[0] in [0,28]:
