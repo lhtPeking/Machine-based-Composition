@@ -15,6 +15,11 @@ Clone the repository:
 ``` bash
 git clone git@github.com:lhtPeking/Machine-based-Composition.git
 ```
+Requirements:
+``` bash
+pip install mido python-rtmidi
+pip install umap-learn matplotlib
+```
 Switch to the directory where our model is located:
 ``` bash
 cd Model

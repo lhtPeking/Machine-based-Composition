@@ -40,17 +40,25 @@ class GAmusic:
         return group
     
     def run(self,maxIter):
+        iterationCount = 0
         for i in range(maxIter):
             self.iterate()
+            iterationCount += 1
             if self.Fitness_A(self.population[0]) > self.fitness_Final: # fitness达到阈值, 提前终止
                 break
         
-        # 这里只针对选中的fitnessFunction进行Heatmap可视化, 但是降维的时候要考虑所有的fitnessFunction
-        Heatmap = Heatmap(self, self.populationRecord, self.fitnessFunction, self.individualLength) 
-        Heatmap.draw()
-        
         Mapping = Mapping(self, self.population[0], self.fileName)
         Mapping.generate()
+        
+        # 这里只针对选中的fitnessFunction进行Heatmap可视化, 但是降维的时候要考虑所有的fitnessFunction
+        Heatmap = Heatmap(self, self.populationRecord, self.fitnessFunction, self.individualLength, self.fileName) 
+        Heatmap.draw()
+        
+        DR = DR(self, self.population[:], self.fileName)
+        DR.analyze()
+        
+        print('Iteration finished, the final fitness is: ', self.Fitness_A(self.population[0]))
+        print('The final iteration count is: ', iterationCount)
     
     def iterate(self):
         # Duplication: 高于fitness_Iter的个体复制到下一代

@@ -7,10 +7,11 @@ import math
 
 class Heatmap:
     # 对进化过程中个体的fitness值进行可视化
-    def __init__(self, populationRecord, fitnessFunction, individualLength):
+    def __init__(self, populationRecord, fitnessFunction, individualLength, fileName):
         self.populationRecord = populationRecord
         self.fitnessFunction = fitnessFunction
         self.individualLength = individualLength
+        self.fileName = fileName
         
     def draw(self):
         populationRecord = np.array(self.populationRecord)
@@ -62,17 +63,48 @@ class Heatmap:
         plt.title("Heatmap of Fitness of Individuals",size=20)
         
         plt.show()
+        plt.savefig('../../Result/' + self.fileName + '-Heatmap' + '.png', bbox_inches='tight')
+        
         
         
 class DR:
-    # 尝试一个UMAP降维分析:以12个不同的fitness函数值组成向量,观察不同fitness评价指标下完成迭代时的个体分布
-    def __init__(self, model, data, device):
-        self.model = model
-        self.data = data
-        self.device = device
+    # UMAP降维分析:以12个不同的fitness函数值组成向量,观察不同fitness评价指标下完成迭代时的个体分布
+    def __init__(self, Population, fileName):
+        self.Population = Polulation
+        self.fileName = fileName
 
-    def run(self):
-        pass
+    def analyze(self):
+        Population = np.array(self.Population)
+        # dim(Population) = (populationSize, individualLength)
+        Vectors = np.zeros((Population.shape[0],12))
+        for i in range(Population.shape[0]):
+            Vectors[i][0] = FitnessFunctions.Fitness_A(Population[i][:])
+            Vectors[i][1] = FitnessFunctions.Fitness_B(Population[i][:])
+            Vectors[i][2] = FitnessFunctions.Fitness_NormalStart(Population[i][:])
+            Vectors[i][3] = FitnessFunctions.Fitness_AvoidBigInterval(Population[i][:])
+            Vectors[i][4] = FitnessFunctions.Fitness_AvoidUnpreferredPitch(Population[i][:])
+            Vectors[i][5] = FitnessFunctions.Fitness_AvoidBigDurationChange(Population[i][:])
+            Vectors[i][6] = FitnessFunctions.Fitness_AvoidSyncopation(Population[i][:])
+            Vectors[i][7] = FitnessFunctions.Fitness_AvoidContinueUpOrDown(Population[i][:])
+            Vectors[i][8] = FitnessFunctions.Fitness_AvoidNoChange(Population[i][:])
+            Vectors[i][9] = FitnessFunctions.Fitness_AvoidBigFluctuation(Population[i][:])
+            Vectors[i][10] = FitnessFunctions.Fitness_KeepInAnOctave(Population[i][:])
+            Vectors[i][11] = FitnessFunctions.Fitness_LocalChange(Population[i][:])
+        
+        reducer = umap.UMAP(n_components=2, n_neighbors=10, random_state=42) # n_neighbors可以尝试调整
+        embedding = reducer.fit_transform(Vectors)
+        
+        plt.figure(figsize=(8, 6))
+        plt.scatter(embedding[:, 0], embedding[:, 1], s=30, c='blue', alpha=0.7)
+        plt.title("UMAP of the Final Population",size=20)
+        plt.xlabel("UMAP Dimension 1")
+        plt.ylabel("UMAP Dimension 2")
+        plt.grid(True)
+        plt.show()
+        
+        plt.savefig('../../Result/' + self.fileName + '-UMAP' + '.png', bbox_inches='tight')
+    
+    
     
 class FitnessFunctions:
     def __init__(self, individualLength):
