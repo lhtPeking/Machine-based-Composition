@@ -46,20 +46,35 @@ We define five transformation methods: ```mutation()```, ```transposition()```, 
 ### 3 Natural Selection and Fitness Function
 
 We calculate the fitness of each individual according to the defined fitness function and select individuals from the population using a **probability-weighted** method based on their fitness, to avoid getting stuck in local minima. The iteration stops when either the predefined maximum number of iterations is reached or when an individual’s fitness reaches a threshold.
+
 The overall fitness function is a weighted sum of 13 functions, each evaluating one aspect of an individual:
+
 ```Fitness_NormalStart``` penalizes beginning with a rest or a sustain note.
+
 ```Fitness_AvoidUnpreferredPitch``` penalizes appearance of unpreferred notes, while what notes are not unpreferred needs manual design.
+
 ```Fitness_AvoidSyncopation``` penalizes rests and sustain notes appearing at the start of the 1st or 3rd beat in a bar (downbeats in 4/4).
+
 ```Fitness_AvoidBigInterval``` penalizes intervals bigger than an octave to avoid too sharp pitch change.
+
 ```Fitness_GoodInterval``` rewarding consonant intervals like perfect fifth to promote pleasant melodies.
+
 ```Fitness_AvoidBigFluctuation``` penalizes big variance in all intervals to improve smoothness.
+
 ```Fitness_AvoidContinueUpOrDown``` penalizes continuous same-direction pitch changes in each bar, realized by limiting the interval between first and last notes in a bar.
+
 ```Fitness_AvoidNoteRepetition``` penalizes staying at a same pitch whether by sustaining a note or by using new notes of the same pitch.
+
 ```Fitness_AvoidNoChange``` penalizes repeated notes with same pitch and duration.
+
 ```Fitness_LocalChange``` promotes corresponding local changes by rewarding 3 ascending or descending neighbor notes.
+
 ```Fitness_AvoidBigDurationChange``` penalizes bigger duration changes between neighbor notes than 3, promoting relatively smooth transition.
+
 ```Fitness_KeepInAnOctave``` promotes more notes to be placed within an octave by rewarding the max number of notes in an octave.
+
 ```Fitness_SimilarityBetweenBars``` promotes the similarity between bars by rewarding the proximity of means and vars of their intervals.
+
 Each fitness function outputs a number in [0,1], so their weights can be equally considered.
 
 ### 4 From Digital Encoding to Musical Notation
