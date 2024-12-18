@@ -24,6 +24,7 @@ class GAmusic:
         
         self.initialPopulation = self.random_initial_population()
         self.population = self.initial_population[:]
+        
         self.populationRecord[0] = [self.population[:]]
         
         self.fitnessFunction = fitnessFunction        
@@ -40,6 +41,10 @@ class GAmusic:
             self.iterate()
             if self.Fitness_A(self.population[0]) > self.fitness_Final: # fitness达到阈值, 提前终止
                 break
+        
+        # 这里只针对选中的fitnessFunction进行Heatmap可视化, 但是降维的时候要考虑所有的fitnessFunction
+        Heatmap = Heatmap(self, self.populationRecord, self.fitnessFunction) 
+        Heatmap.draw()
     
     def iterate(self):
         # Duplication: 高于fitness_Iter的个体复制到下一代
@@ -59,6 +64,7 @@ class GAmusic:
             self.retrograde()
             
         self.selection()
+        self.populationRecord.append(self.population[:])
     
     # 直接在self.population上操作
     def mutation(self):
@@ -101,6 +107,7 @@ class GAmusic:
             self.population = self.population[:self.populationSize]
         return
     
+    ############################## Fitness Functions ##############################
     def Fitness_A(self,individual): # 加权
         return self.Fitness_AvoidBigDurationChange(individual)\
                 +self.Fitness_AvoidBigFluctuation(individual)\
