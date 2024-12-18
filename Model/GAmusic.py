@@ -4,8 +4,9 @@ import numpy as np
 from utils import Mapping, Heatmap, DR
 
 class GAmusic:
-    def __init__(self,populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,Flag_C,
-                 mutationRatio,crossoverRatio,maxIter,fitness_Iter,fitness_Final,fitnessFunction,fileName):
+    def __init__(self,populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,
+                 Flag_C,mutationRatio,crossoverRatio,transpositionRatio,inversionRatio,retrogradeRatio,
+                 maxIter,fitness_Iter,fitness_Final,fitnessWeights):
         self.populationSize = populationSize
         self.individualLength = individualLength
         
@@ -17,6 +18,9 @@ class GAmusic:
 
         self.mutationRatio = mutationRatio
         self.crossoverRatio = crossoverRatio
+        self.transpositionRatio = transpositionRatio
+        self.inversionRatio = inversionRatio
+        self.retrogradeRatio = retrogradeRatio
         self.maxIter = maxIter
         
         self.fitness_Iter = fitness_Iter
@@ -25,12 +29,9 @@ class GAmusic:
         self.initialPopulation = self.random_initial_population()
         self.population = self.initialPopulation[:]
         
-        self.populationRecord = {}
-        self.populationRecord[0] = [self.population[:]]
+        self.populationRecord = [self.population[:]]
         
-        self.fitnessFunction = fitnessFunction        
-        
-        self.fileName = fileName
+        self.fitnessWeights = fitnessWeights
 
     def random_initial_population(self):
         group = []
@@ -40,59 +41,53 @@ class GAmusic:
         return group
     
     def run(self,maxIter):
-        iterationCount = 0
         for i in range(maxIter):
             self.iterate()
-            iterationCount += 1
-            if self.Fitness_A(self.population[0]) > self.fitness_Final: # fitness达到阈值, 提前终止
+            if self.Fitness(self.population[0]) > self.fitness_Final: # fitness达到阈值, 提前终止
                 break
         
-        Mapping = Mapping(self, self.population[0], self.fileName)
-        Mapping.generate()
-        
         # 这里只针对选中的fitnessFunction进行Heatmap可视化, 但是降维的时候要考虑所有的fitnessFunction
-        Heatmap = Heatmap(self, self.populationRecord, self.fitnessFunction, self.individualLength, self.fileName) 
+        Heatmap = Heatmap(self, self.populationRecord, self.fitnessFunction) 
         Heatmap.draw()
-        
-        DR = DR(self, self.population[:], self.fileName)
-        DR.analyze()
-        
-        print('Iteration finished, the final fitness is: ', self.Fitness_A(self.population[0]))
-        print('The final iteration count is: ', iterationCount)
     
     def iterate(self):
         # Duplication: 高于fitness_Iter的个体复制到下一代
         for n in range(self.populationSize):
-            if self.Fitness_A(self.population[n]) > self.fitness_Iter:
+            if self.Fitness(self.population[n]) > self.fitness_Iter:
                 self.population.append(self.population[n])
         
-        if Flag_M:
+        if self.Flag_M:
             self.mutation()
-        if Flag_C:
-            self.crossover()
-        if Flag_T:
+        if self.Flag_T:
             self.transposition()
-        if Flag_I:
+        if self.Flag_I:
             self.inversion()
-        if Flag_R:
+        if self.Flag_R:
             self.retrograde()
+        if self.Flag_C:
+            self.crossover()
             
         self.selection()
         self.populationRecord.append(self.population[:])
     
     # 直接在self.population上操作
     def mutation(self):
-        for i in range(self.populationSize):
+        new_ones = []
+        for individual in self.population:
             if random.random() < self.mutationRatio: # 一次只突变一个音符
-                self.population[i][random.randint(0,self.individualLength-1)] = random.randint(0,28)
+                new = individual[:]
+                new[random.randint(0,self.individualLength-1)] = random.randint(0,28)
+                new_ones.append(new)
+        self.population.extend(new_ones)
         return
     
     def crossover(self): 
         # 以长度为8的段落为单位进行交叉(原本每个个体有32个音符)
-        for i in range(self.populationSize):
+        new_ones = []
+        for i in range(len(self.population)):
             individual = self.population[i]
             segments = [individual[j:j+8] for j in range(0, self.individualLength, 8)]
-            for j in range(i+1, self.populationSize): 
+            for j in range(i+1, len(self.population)): 
                 if random.random() < self.crossoverRatio:
                     individual2 = self.population[j]
                     segments2 = [individual2[k:k+8] for k in range(0, self.individualLength, 8)]
@@ -100,57 +95,75 @@ class GAmusic:
                         if random.random() < 0.5:
                             segments[m],segments2[m] = segments2[m],segments[m]
                     # flatten:
-                    self.population[i] = [note for segment in segments for note in segment]
-                    self.population[j] = [note for segment in segments2 for note in segment]
+                    new_ones.append([note for segment in segments for note in segment])
+                    new_ones.append([note for segment in segments2 for note in segment])
+        self.population.extend(new_ones)
         return
     
     def transposition(self):
+        new_ones = []
+        for individual in self.population:
+            if random.random() < self.transpositionRatio:
+                new = individual[:]
+                change_number = random.randint(1,26)
+                for j in range(self.individualLength):
+                    if new[j] not in [0,28]:
+                        new[j] = (new[j] + change_number - 1) % 27 + 1
+                new_ones.append(new)
+        self.population.extend(new_ones)
         return
+
     def inversion(self):
+        new_ones = []
+        for individual in self.population:
+            if random.random() < self.inversionRatio:
+                new = individual[:]
+                center = random.randint(1,27)
+                for j in range(self.individualLength):
+                    if new[j] not in [0,28]:
+                        new[j] = (2*center - new[j] - 1 + 27) % 27 + 1
+                new_ones.append(new)
+        self.population.extend(new_ones)
         return
+
     def retrograde(self):
+        new_ones = []
+        for individual in self.population:
+            if random.random() < self.retrogradeRatio:
+                new = individual[::-1]
+                new_ones.append(new)
+        self.population.extend(new_ones)
         return
     
     # 从经过操作的扩大的population选出大小为self.populationSize的子集作为新的population
     def selection(self):
-        if self.fitnessFunction == 'A':
-            self.population.sort(key=lambda individual: self.Fitness_A(individual), reverse=True)
-            self.population = self.population[:self.populationSize]
-        elif self.fitnessFunction == 'B':
-            self.population.sort(key=lambda individual: self.Fitness_B(individual), reverse=True)
-            self.population = self.population[:self.populationSize]
-        return
+        weights = []
+        for individual in self.population:
+            weights.append(self.Fitness(individual))
+        weights = np.array(weights)
+        possibilities = weights/np.sum(weights)
+        indices = np.arange(len(self.population))
+        chosen_indices = np.random.choice(indices,size=self.populationSize,replace=False,p=possibilities)
+        chosen_population = [self.population[i] for i in chosen_indices]
+        self.population = chosen_population
+        self.population.sort(key=lambda individual: self.Fitness(individual), reverse=True)
+
     
     ############################## Fitness Functions ##############################
-    def Fitness_A(self,individual): # 加权
-        return self.Fitness_AvoidBigDurationChange(individual)\
-                +self.Fitness_AvoidBigFluctuation(individual)\
-                +self.Fitness_AvoidBigInterval(individual)\
-                +self.Fitness_AvoidContinueUpOrDown(individual)\
-                +self.Fitness_AvoidNoChange(individual)\
-                +self.Fitness_AvoidNoteRepetition(individual)\
-                +self.Fitness_AvoidSyncopation(individual)\
-                +self.Fitness_AvoidUnpreferredPitch(individual)\
-                +self.Fitness_GoodInterval(individual)\
-                +self.Fitness_KeepInAnOctave(individual)\
-                +self.Fitness_LocalChange(individual)\
-                +self.Fitness_SimilarityBetweenBars(individual)\
-                +self.Fitness_NormalStart(individual)
-    
-    def Fitness_B(self,individual):
-        return self.Fitness_AvoidBigDurationChange(individual)\
-                +self.Fitness_AvoidBigFluctuation(individual)\
-                +self.Fitness_AvoidBigInterval(individual)\
-                +self.Fitness_AvoidContinueUpOrDown(individual)\
-                +self.Fitness_AvoidNoChange(individual)\
-                +self.Fitness_AvoidNoteRepetition(individual)\
-                +self.Fitness_AvoidSyncopation(individual)\
-                +self.Fitness_AvoidUnpreferredPitch(individual)\
-                +self.Fitness_GoodInterval(individual)\
-                +self.Fitness_KeepInAnOctave(individual)\
-                +self.Fitness_LocalChange(individual)\
-                +self.Fitness_SimilarityBetweenBars(individual)\
-                +self.Fitness_NormalStart(individual)
+    def Fitness(self,individual): # 加权
+        return self.Fitness_AvoidBigDurationChange(individual) * self.fitnessWeights[0]\
+                +self.Fitness_AvoidBigFluctuation(individual) * self.fitnessWeights[1]\
+                +self.Fitness_AvoidBigInterval(individual) * self.fitnessWeights[2]\
+                +self.Fitness_AvoidContinueUpOrDown(individual) * self.fitnessWeights[3]\
+                +self.Fitness_AvoidNoChange(individual) * self.fitnessWeights[4]\
+                +self.Fitness_AvoidNoteRepetition(individual) * self.fitnessWeights[5]\
+                +self.Fitness_AvoidSyncopation(individual) * self.fitnessWeights[6]\
+                +self.Fitness_AvoidUnpreferredPitch(individual) * self.fitnessWeights[7]\
+                +self.Fitness_GoodInterval(individual) * self.fitnessWeights[8]\
+                +self.Fitness_KeepInAnOctave(individual) * self.fitnessWeights[9]\
+                +self.Fitness_LocalChange(individual) * self.fitnessWeights[10]\
+                +self.Fitness_SimilarityBetweenBars(individual) * self.fitnessWeights[11]\
+                +self.Fitness_NormalStart(individual) * self.fitnessWeights[12]
     
     def Fitness_NormalStart(self,individual):
         if individual[0] in [0,28]:
@@ -213,16 +226,15 @@ class GAmusic:
         n = self.individualLength
         score = 0
         for i in [0,8,16,24]:
-            a=i
-            b=i+7
-            while individual[a] in [0,28]:
-                a += 1
-            if a >= b:
-                total_change = 0
+            bar = individual[i:i+8]
+            while 0 in bar:
+                bar.remove(0)
+            while 28 in bar:
+                bar.remove(28)
+            if bar:
+                total_change = abs(bar[-1] - bar[0])
             else:
-                while individual[b] in [0,28]:
-                    b -= 1
-                total_change = abs(individual[i+7] - individual[i])
+                total_change = 0
             if total_change < 8:
                 score += 1
         return score/4
@@ -301,7 +313,7 @@ class GAmusic:
             elif individual[i] != 0:
                 last_one = individual[i]
                 repetition.append(1)
-        return -max(repetition)/n
+        return 1 - max(repetition)/n
     
     def Fitness_GoodInterval(self,individual):
         n = self.individualLength
@@ -361,6 +373,9 @@ class GAmusic:
         mean4 = np.mean(intervals4)
         var4 = np.var(intervals4)
 
-        mean_std = np.std([mean1,mean2,mean3,mean4])
-        var_std = np.std([var1,var2,var3,var4])
-        return - mean_std - var_std
+        mean_var = np.var([mean1,mean2,mean3,mean4])
+        var_var = np.var([var1,var2,var3,var4])
+
+        return (np.exp(-mean_var) + np.exp(-var_var))/2
+
+
