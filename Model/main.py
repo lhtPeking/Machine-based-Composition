@@ -24,6 +24,8 @@ def main():
     
     parser.add_argument('fitnessFunction', type=str, help='The fitness function to be used.(A for A, B for B, etc.)')
     
+    parser.add_argument('fileName', type=str, help='The name of the output file.')
+    
     args = parser.parse_args()
     
     populationSize = args.populationSize
@@ -44,14 +46,16 @@ def main():
     
     fitnessFunction = args.fitnessFunction
     
+    fileName = args.fileName
+    
     print('Argument passing finished.')
     
-    GA = GAmusic(populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,
-                 Flag_C,mutationRatio,crossoverRatio,maxIter,fitness_Iter,fitness_Final,fitnessFunction)
+    GA = GAmusic(populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,Flag_C,
+                 mutationRatio,crossoverRatio,maxIter,fitness_Iter,fitness_Final,fitnessFunction,fileName)
     
     GA.run(maxIter)
     
-    # Output:
+    # Output应包含: 迭代次数、Heatmap、降维表示、最终音乐
     
 if __name__ == '__main__':
     main()

@@ -21,10 +21,10 @@ cd Model
 ```
 The format for entering commands:
 ``` bash
-python main.py populationSize individualLength Flag_M Flag_T Flag_I Flag_R Flag_C mutationRatio crossoverRatio maxIter fitness_Iter fitness_Final fitnessFunction
+python main.py [populationSize] [individualLength] [Flag_M] [Flag_T] [Flag_I] [Flag_R] [Flag_C] [mutationRatio] [crossoverRatio] [maxIter] [fitness_Iter] [fitness_Final] [fitnessFunction] [fileName]
 ```
 
-Example:```(base) haotianli@bogon Model % python main.py 20 28 1 1 1 1 1 0.2 0.2 30 0.8 0.9 A```
+Example:```(base) haotianli@bogon Model % python main.py 20 28 1 1 1 1 1 0.2 0.2 30 0.8 0.9 A output1```
 
   
 

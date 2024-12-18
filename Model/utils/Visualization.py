@@ -2,12 +2,15 @@ import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sns
 import pandas as pd
+import math
+
 
 class Heatmap:
     # 对进化过程中个体的fitness值进行可视化
-    def __init__(self, populationRecord, fitnessFunction):
+    def __init__(self, populationRecord, fitnessFunction, individualLength):
         self.populationRecord = populationRecord
         self.fitnessFunction = fitnessFunction
+        self.individualLength = individualLength
         
     def draw(self):
         populationRecord = np.array(self.populationRecord)
@@ -15,38 +18,40 @@ class Heatmap:
         fitnessMatrix = np.zeros((populationRecord.shape[0],populationRecord.shape[1]))
         # dim(fitnessMatrix) = (maxIter, populationSize)
         
+        FitnessFunctions = FitnessFunctions(self.individualLength)
+        
         for i in range(populationRecord.shape[0]):
             for j in range(populationRecord.shape[1]):
                 if self.fitnessFunction == 'A':
-                    fitnessMatrix[i][j] = self.Fitness_A(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_A(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'B':
-                    fitnessMatrix[i][j] = self.Fitness_B(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_B(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'NormalStart':
-                    fitnessMatrix[i][j] = self.Fitness_NormalStart(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_NormalStart(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'AvoidBigInterval':
-                    fitnessMatrix[i][j] = self.Fitness_AvoidBigInterval(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidBigInterval(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'AvoidUnpreferredPitch':
-                    fitnessMatrix[i][j] = self.Fitness_AvoidUnpreferredPitch(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidUnpreferredPitch(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'AvoidBigDurationChange':
-                    fitnessMatrix[i][j] = self.Fitness_AvoidBigDurationChange(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidBigDurationChange(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'AvoidSyncopation':
-                    fitnessMatrix[i][j] = self.Fitness_AvoidSyncopation(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidSyncopation(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'AvoidContinueUpOrDown':
-                    fitnessMatrix[i][j] = self.Fitness_AvoidContinueUpOrDown(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidContinueUpOrDown(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'AvoidNoChange':
-                    fitnessMatrix[i][j] = self.Fitness_AvoidNoChange(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidNoChange(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'AvoidBigFluctuation':
-                    fitnessMatrix[i][j] = self.Fitness_AvoidBigFluctuation(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidBigFluctuation(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'KeepInAnOctave':
-                    fitnessMatrix[i][j] = self.Fitness_KeepInAnOctave(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_KeepInAnOctave(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'LocalChange':
-                    fitnessMatrix[i][j] = self.Fitness_LocalChange(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_LocalChange(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'AvoidNoteRepetition':
-                    fitnessMatrix[i][j] = self.Fitness_AvoidNoteRepetition(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidNoteRepetition(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'GoodInterval':
-                    fitnessMatrix[i][j] = self.Fitness_GoodInterval(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_GoodInterval(populationRecord[i][j][:])
                 elif self.fitnessFunction == 'SimilarityBetweenBars':
-                    fitnessMatrix[i][j] = self.Fitness_SimilarityBetweenBars(populationRecord[i][j][:])
+                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_SimilarityBetweenBars(populationRecord[i][j][:])
         
         # Plot:
         data = pd.DataFrame(fitnessMatrix)
@@ -56,12 +61,23 @@ class Heatmap:
         plt.ylabel("Fitness",size=20,rotation=0)
         plt.title("Heatmap of Fitness of Individuals",size=20)
         
-        plot.show()
+        plt.show()
         
-                    
-                    
+        
+class DR:
+    # 尝试一个UMAP降维分析:以12个不同的fitness函数值组成向量,观察不同fitness评价指标下完成迭代时的个体分布
+    def __init__(self, model, data, device):
+        self.model = model
+        self.data = data
+        self.device = device
+
+    def run(self):
+        pass
     
-    ############################## Fitness Functions ##############################
+class FitnessFunctions:
+    def __init__(self, individualLength):
+        self.individualLength = individualLength
+    
     def Fitness_A(self,individual): # 加权
         return self.Fitness_AvoidBigDurationChange(individual)\
                 +self.Fitness_AvoidBigFluctuation(individual)\
@@ -304,18 +320,3 @@ class Heatmap:
         mean_std = np.std([mean1,mean2,mean3,mean4])
         var_std = np.std([var1,var2,var3,var4])
         return - mean_std - var_std
-                    
-                            
-        
-
-
-        
-class DR:
-    # 尝试一个UMAP降维分析:以12个不同的fitness函数值组成向量,观察不同fitness评价指标下完成迭代时的个体分布
-    def __init__(self, model, data, device):
-        self.model = model
-        self.data = data
-        self.device = device
-
-    def run(self):
-        pass

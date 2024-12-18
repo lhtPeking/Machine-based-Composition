@@ -4,8 +4,8 @@ import numpy as np
 from utils import Mapping, Heatmap, DR
 
 class GAmusic:
-    def __init__(self,populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,
-                 Flag_C,mutationRatio,crossoverRatio,maxIter,fitness_Iter,fitness_Final,fitnessFunction):
+    def __init__(self,populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,Flag_C,
+                 mutationRatio,crossoverRatio,maxIter,fitness_Iter,fitness_Final,fitnessFunction,fileName):
         self.populationSize = populationSize
         self.individualLength = individualLength
         
@@ -29,6 +29,8 @@ class GAmusic:
         self.populationRecord[0] = [self.population[:]]
         
         self.fitnessFunction = fitnessFunction        
+        
+        self.fileName = fileName
 
     def random_initial_population(self):
         group = []
@@ -44,8 +46,11 @@ class GAmusic:
                 break
         
         # 这里只针对选中的fitnessFunction进行Heatmap可视化, 但是降维的时候要考虑所有的fitnessFunction
-        Heatmap = Heatmap(self, self.populationRecord, self.fitnessFunction) 
+        Heatmap = Heatmap(self, self.populationRecord, self.fitnessFunction, self.individualLength) 
         Heatmap.draw()
+        
+        Mapping = Mapping(self, self.population[0], self.fileName)
+        Mapping.generate()
     
     def iterate(self):
         # Duplication: 高于fitness_Iter的个体复制到下一代
