@@ -23,15 +23,16 @@ class GAmusic:
         self.fitness_Final = fitness_Final
         
         self.initialPopulation = self.random_initial_population()
-        self.population = self.initial_population[:]
+        self.population = self.initialPopulation[:]
         
+        self.populationRecord = {}
         self.populationRecord[0] = [self.population[:]]
         
         self.fitnessFunction = fitnessFunction        
 
     def random_initial_population(self):
         group = []
-        for i in range(self.population_size):
+        for i in range(self.populationSize):
             # F3到G5, 0作为休止符, 1-27作为音符, 28为延音符 
             group.append(random.choices(range(29),k=self.individualLength))
         return group
@@ -102,7 +103,7 @@ class GAmusic:
         if self.fitnessFunction == 'A':
             self.population.sort(key=lambda individual: self.Fitness_A(individual), reverse=True)
             self.population = self.population[:self.populationSize]
-        else if self.fitnessFunction == 'B':
+        elif self.fitnessFunction == 'B':
             self.population.sort(key=lambda individual: self.Fitness_B(individual), reverse=True)
             self.population = self.population[:self.populationSize]
         return

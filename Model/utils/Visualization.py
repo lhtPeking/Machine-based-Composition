@@ -51,6 +51,11 @@ class Heatmap:
         # Plot:
         data = pd.DataFrame(fitnessMatrix)
         sns.heatmap(data)
+        
+        plt.xlabel("Iterations",size=20)
+        plt.ylabel("Fitness",size=20,rotation=0)
+        plt.title("Heatmap of Fitness of Individuals",size=20)
+        
         plot.show()
         
                     

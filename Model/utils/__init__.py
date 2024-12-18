@@ -1,4 +1,4 @@
-from Mapping import mapping
-from Visualization import Heatmap, DR
+from .Mapping import Mapping
+from .Visualization import Heatmap, DR
 
-__all__ = ['mapping', 'Heatmap', 'DR']
+__all__ = ['Mapping', 'Heatmap', 'DR']

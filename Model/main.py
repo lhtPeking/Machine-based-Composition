@@ -9,11 +9,11 @@ def main():
     parser.add_argument('populationSize', type=int, help='The size of the population.')
     parser.add_argument('individualLength', type=int, help='The length of each individual.') # 8*4=32
     
-    parser.add_argument('Flag-M', type=int, help='Do mutation or not.(1 for yes, 0 for no)')
-    parser.add_argument('Flag-T', type=int, help='Do transposition or not.(1 for yes, 0 for no)')
-    parser.add_argument('Flag-I', type=int, help='Do inversion or not.(1 for yes, 0 for no)')
-    parser.add_argument('Flag-R', type=int, help='Do retrograde or not.(1 for yes, 0 for no)')
-    parser.add_argument('Flag-C', type=int, help='Do crossover or not.(1 for yes, 0 for no)')
+    parser.add_argument('Flag_M', type=int, help='Do mutation or not.(1 for yes, 0 for no)')
+    parser.add_argument('Flag_T', type=int, help='Do transposition or not.(1 for yes, 0 for no)')
+    parser.add_argument('Flag_I', type=int, help='Do inversion or not.(1 for yes, 0 for no)')
+    parser.add_argument('Flag_R', type=int, help='Do retrograde or not.(1 for yes, 0 for no)')
+    parser.add_argument('Flag_C', type=int, help='Do crossover or not.(1 for yes, 0 for no)')
     
     parser.add_argument('mutationRatio', type=float, help='The mutation strength during iteration.')
     parser.add_argument('crossoverRatio', type=float, help='The crossover strength during iteration.')
@@ -35,8 +35,8 @@ def main():
     Flag_R = args.Flag_R
     Flag_C = args.Flag_C
     
-    selectionRatio = args.selectionRatio
     mutationRatio = args.mutationRatio
+    crossoverRatio = args.crossoverRatio
     maxIter = args.maxIter
     
     fitness_Iter = args.fitness_Iter
