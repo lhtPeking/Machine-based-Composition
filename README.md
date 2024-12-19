@@ -173,3 +173,6 @@ We conducted numerous experiments and detailed analyses on the various hyperpara
 
 ## References 📜
 **[1]** Dragan Matić. "A Genetic Algorithm for Composing Music." The Yugoslav Journal of Operations Research 20.39 (2010): 157-177.
+**[2]** Shipra Shukla & Haider Banka. "Monophonic music composition using genetic algorithm and Bresenham's line algorithm." Multimedia Tools and Applications 81.18 (2022): 26483–26503.
+**[3]** Huang Chengyu et al. "Algorithm Composition By Genetic Algorithm." Microcomputer Applications 30.3 (2014): 1-4.
+**[4]** Du Peng et al. "An Auto Composing Method for Motive of Inventions Based on Genetic Algorithm." Computer Technology and Development 17.4 (2007): 150-153.
