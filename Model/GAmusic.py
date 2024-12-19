@@ -50,7 +50,7 @@ class GAmusic:
     def run(self,maxIter):
         for i in range(maxIter):
             self.iterate()
-            if self.Fitness(self.population[0]) > self.fitness_Final: # fitness达到阈值, 提前终止
+            if self.Fitness(self.population[-1]) > self.fitness_Final: # fitness达到阈值, 提前终止
                 break
         
         # 这里只针对选中的fitnessFunction进行Heatmap可视化, 但是降维的时候要考虑所有的fitnessFunction
