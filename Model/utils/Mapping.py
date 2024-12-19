@@ -14,9 +14,10 @@ sequence = [1, 2, 3, 4, 5, 6, 7, 0, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
 quarter_note_ticks = 480  # 每个四分之一拍的时长
 
 class Mapping:
-    def __init__(self, sequence, fileName):
+    def __init__(self, sequence, fileName, rank):
         self.sequence = sequence
         self.fileName = fileName
+        self.rank = rank
 
     def generate(self):
         midi = MidiFile()
@@ -43,4 +44,4 @@ class Mapping:
                 time = 0
                 sustain_time = 0
 
-        midi.save('../../Result/' + self.fileName + '.mid')
+        midi.save('../Result/' + self.fileName + '/' + str(self.rank) + '.mid')
