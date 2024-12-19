@@ -2,6 +2,7 @@ import random
 import math
 import numpy as np
 from utils import Mapping, Heatmap, DR
+import os
 
 class GAmusic:
     def __init__(self,populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,
@@ -37,6 +38,8 @@ class GAmusic:
         
         self.fileName = fileName
 
+        os.makedirs('../Results/' + self.fileName)
+
     def random_initial_population(self):
         group = []
         for i in range(self.populationSize):
@@ -58,8 +61,8 @@ class GAmusic:
         umap.analyze()
 
         for i in range(5):
-            individual = self.population[i-1]
-            music = Mapping(individual,self.fileName,i)
+            individual = self.population[i]
+            music = Mapping(individual,self.fileName,i+1)
             music.generate()
     
     def iterate(self):
@@ -164,19 +167,27 @@ class GAmusic:
     ############################## Fitness Functions ##############################
     def Fitness(self,individual): # 加权
         return self.Fitness_NormalStart(individual) * self.fitnessWeights[0]\
-                +self.Fitness_AvoidUnpreferredPitch(individual) * self.fitnessWeights[1]\
-                +self.Fitness_AvoidSyncopation(individual) * self.fitnessWeights[2]\
-                +self.Fitness_AvoidBigInterval(individual) * self.fitnessWeights[3]\
-                +self.Fitness_GoodInterval(individual) * self.fitnessWeights[4]\
-                +self.Fitness_AvoidBigFluctuation(individual) * self.fitnessWeights[5]\
-                +self.Fitness_AvoidContinueUpOrDown(individual) * self.fitnessWeights[6]\
-                +self.Fitness_AvoidNoteRepetition(individual) * self.fitnessWeights[7]\
-                +self.Fitness_AvoidNoChange(individual) * self.fitnessWeights[8]\
-                +self.Fitness_LocalChange(individual) * self.fitnessWeights[9]\
-                +self.Fitness_AvoidBigDurationChange(individual) * self.fitnessWeights[10]\
-                +self.Fitness_KeepInAnOctave(individual) * self.fitnessWeights[11]\
-                +self.Fitness_SimilarityBetweenBars(individual) * self.fitnessWeights[12]
+                +self.Fitness_BarEnd(individual) * self.fitnessWeights[1]\
+                +self.Fitness_AvoidUnpreferredPitch(individual) * self.fitnessWeights[2]\
+                +self.Fitness_AvoidSyncopation(individual) * self.fitnessWeights[3]\
+                +self.Fitness_AvoidBigInterval(individual) * self.fitnessWeights[4]\
+                +self.Fitness_GoodInterval(individual) * self.fitnessWeights[5]\
+                +self.Fitness_AvoidBigFluctuation(individual) * self.fitnessWeights[6]\
+                +self.Fitness_AvoidContinueUpOrDown(individual) * self.fitnessWeights[7]\
+                +self.Fitness_AvoidNoteRepetition(individual) * self.fitnessWeights[8]\
+                +self.Fitness_AvoidNoChange(individual) * self.fitnessWeights[9]\
+                +self.Fitness_LocalChange(individual) * self.fitnessWeights[10]\
+                +self.Fitness_AvoidBigDurationChange(individual) * self.fitnessWeights[11]\
+                +self.Fitness_KeepInAnOctave(individual) * self.fitnessWeights[12]\
+                +self.Fitness_SimilarityBetweenBars(individual) * self.fitnessWeights[13]
     
+    def Fitness_BarEnd(self,individual):
+        score = 0
+        for i in [7,15,23,31]:
+            if individual[i] in [0,28]:
+                score += 1
+        return score/4
+
     def Fitness_NormalStart(self,individual):
         if individual[0] in [0,28]:
             return 0
@@ -199,14 +210,17 @@ class GAmusic:
     
     def Fitness_AvoidUnpreferredPitch(self,individual):
         n = self.individualLength
-        preferred_pitches = []
+        unpreferred_pitches = [1,7,13,19,25]
         score = 0
+        last_one = 100
         for i in range(n):
-            if individual[i] in preferred_pitches:
+            if individual[i] != 28:
+                last_one = individual[i]
+                if individual[i] in unpreferred_pitches:
+                    score += 1
+            elif individual[i] == 28 and last_one in unpreferred_pitches:
                 score += 1
-            else:
-                score -= 1
-        return score/n
+        return 1 - score/n
     
     def Fitness_AvoidBigDurationChange(self,individual):
         n = self.individualLength
@@ -389,7 +403,3 @@ class GAmusic:
         var_var = np.var([var1,var2,var3,var4])
 
         return (np.exp(-mean_var) + np.exp(-var_var))/2
-
-
-model = GAmusic(20,32,1,1,1,1,1,0.1,0.1,0.1,0.1,0.1,10,4,8,[1 for i in range(13)],'output1')
-model.run(10)

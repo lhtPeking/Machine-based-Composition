@@ -26,7 +26,7 @@ def main():
     parser.add_argument('fitness_Iter', type=float, help='The fitness threshold for selection process.')
     parser.add_argument('fitness_Final', type=float, help='The fitness threshold for stop.')
     
-    parser.add_argument('fitnessWeights', type=float, nargs=13, help='The combination weights of fitness functions.')
+    parser.add_argument('fitnessWeights', type=float, nargs=14, help='The combination weights of fitness functions.')
     
     parser.add_argument('fileName', type=str, help='The name of the output file.')
     
