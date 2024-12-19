@@ -76,10 +76,15 @@ Each fitness function outputs a number in **[0,1]**, so their weights can be equ
 ### 5 Visualization
 
 We use **Heatmaps** to represent the fitness values of the population throughout the iteration process, providing an intuitive analysis of how different **hyperparameter selections** affect the iteration. 
-<img src="./Results/Example-Heatmap.png" alt="Heatmap-example" width="300"/>
+<center>
+<img src="./Results/Example-Heatmap.png" alt="Heatmap-example" width="600"/>
+</center>
+</b>
 Additionally, we apply **UMAP** dimensionality reduction to represent each individual as a vector defined by 12 fitness function values and perform clustering analysis.
-<img src="./Results/Example-UMAP.png" alt="UMAP-example" width="300"/>
-
+<center>
+<img src="./Results/Example-UMAP.png" alt="UMAP-example" width="600"/>
+</center>
+</b>
 ## Results 📋
 
   
