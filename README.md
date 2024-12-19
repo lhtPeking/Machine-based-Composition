@@ -41,11 +41,11 @@ cd  Model
 
 The format for entering commands:
 
-```python main.py [populationSize] [individualLength] [Flag_M：Do mutation or not.(1 for yes, 0 for no)] [Flag_T：Do transposition or not.(1 for yes, 0 for no)] [Flag_I：Do inversion or not.(1 for yes, 0 for no)] [Flag_R：Do retrograde or not.(1 for yes, 0 for no)] [Flag_C：Do crossover or not.(1 for yes, 0 for no)] [mutationRatio] [crossoverRatio] [transpositionRatio] [inversionRatio] [retrogradeRatio] [maxIter] [fitness_Iter] [fitness_Final] [fitnessWeights_NormalStart] [fitnessWeights_AvoidUnpreferredPitch] [fitnessWeights_AvoidSyncopation] [fitnessWeights_AvoidBigInterval] [fitnessWeights_GoodInterval] [fitnessWeights_AvoidBigFluctuation] [fitnessWeights_AvoidContinueUpOrDown] [fitnessWeights_AvoidNoteRepetition] [fitnessWeights_AvoidNoChange] [fitnessWeights_LocalChange] [fitnessWeights_AvoidBigDurationChange] [fitnessWeights_KeepInAnOctave] [fitnessWeights_SimilarityBetweenBars] [fileName]```
+```python main.py [populationSize] [individualLength] [Flag_M：Do mutation or not.(1 for yes, 0 for no)] [Flag_T：Do transposition or not.(1 for yes, 0 for no)] [Flag_I：Do inversion or not.(1 for yes, 0 for no)] [Flag_R：Do retrograde or not.(1 for yes, 0 for no)] [Flag_C：Do crossover or not.(1 for yes, 0 for no)] [mutationRatio] [crossoverRatio] [transpositionRatio] [inversionRatio] [retrogradeRatio] [maxIter] [fitness_Iter] [fitness_Final] [fitnessWeights_NormalStart] [fitnessWeights_BarEnd] [fitnessWeights_AvoidUnpreferredPitch] [fitnessWeights_AvoidSyncopation] [fitnessWeights_AvoidBigInterval] [fitnessWeights_GoodInterval] [fitnessWeights_AvoidBigFluctuation] [fitnessWeights_AvoidContinueUpOrDown] [fitnessWeights_AvoidNoteRepetition] [fitnessWeights_AvoidNoChange] [fitnessWeights_LocalChange] [fitnessWeights_AvoidBigDurationChange] [fitnessWeights_KeepInAnOctave] [fitnessWeights_SimilarityBetweenBars] [fileName]```
 
   
 
-Example:```(GAmusic) haotianli@bogon Model % python main.py 20 32 1 1 1 1 1 0.1 0.1 0.1 0.1 0.1 50 0.8 5 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0 0 0 output1```
+Example:```(GAmusic) haotianli@bogon Model % python main.py 20 32 1 1 1 1 1 0.1 0.1 0.1 0.1 0.1 50 0.8 1.2 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 0.1 output1```
 
   
 
@@ -79,7 +79,7 @@ We calculate the fitness of each individual according to the defined fitness fun
 
   
 
-The overall fitness function is a weighted sum of 13 functions, each evaluating one aspect of an individual:
+The overall fitness function is a weighted sum of 14 functions, each evaluating one aspect of an individual:
 
   
 
@@ -87,51 +87,55 @@ The overall fitness function is a weighted sum of 13 functions, each evaluating 
 
   
 
-**No2.**  ```Fitness_AvoidUnpreferredPitch``` penalizes appearance of unpreferred notes, while what notes are not unpreferred needs manual design.
+**No2.**  ```Fitness_BarEnd``` rewards rests and sustain notes at the end of each bar to make boundaries clear.
 
   
 
-**No3.**  ```Fitness_AvoidSyncopation``` penalizes rests and sustain notes appearing at the start of the 1st or 3rd beat in a bar (downbeats in 4/4).
+**No3.**  ```Fitness_AvoidUnpreferredPitch``` penalizes appearance of unpreferred notes, while what notes are not unpreferred needs manual design.
 
   
 
-**No.4**  ```Fitness_AvoidBigInterval``` penalizes intervals bigger than an octave to avoid too sharp pitch change.
+**No4.**  ```Fitness_AvoidSyncopation``` penalizes rests and sustain notes appearing at the start of the 1st or 3rd beat in a bar (downbeats in 4/4).
 
   
 
-**No.5**  ```Fitness_GoodInterval``` rewarding consonant intervals like perfect fifth to promote pleasant melodies.
+**No.5**  ```Fitness_AvoidBigInterval``` penalizes intervals bigger than an octave to avoid too sharp pitch change.
 
   
 
-**No.6**  ```Fitness_AvoidBigFluctuation``` penalizes big variance in all intervals to improve smoothness.
+**No.6**  ```Fitness_GoodInterval``` rewarding consonant intervals like perfect fifth to promote pleasant melodies.
 
   
 
-**No.7**  ```Fitness_AvoidContinueUpOrDown``` penalizes continuous same-direction pitch changes in each bar, realized by limiting the interval between first and last notes in a bar.
+**No.7**  ```Fitness_AvoidBigFluctuation``` penalizes big variance in all intervals to improve smoothness.
 
   
 
-**No.8**  ```Fitness_AvoidNoteRepetition``` penalizes staying at a same pitch whether by sustaining a note or by using new notes of the same pitch.
+**No.8**  ```Fitness_AvoidContinueUpOrDown``` penalizes continuous same-direction pitch changes in each bar, realized by limiting the interval between first and last notes in a bar.
 
   
 
-**No.9**  ```Fitness_AvoidNoChange``` penalizes repeated notes with same pitch and duration.
+**No.9**  ```Fitness_AvoidNoteRepetition``` penalizes staying at a same pitch whether by sustaining a note or by using new notes of the same pitch.
 
   
 
-**No.10**  ```Fitness_LocalChange``` promotes corresponding local changes by rewarding 3 ascending or descending neighbor notes.
+**No.10**  ```Fitness_AvoidNoChange``` penalizes repeated notes with same pitch and duration.
 
   
 
-**No.11**  ```Fitness_AvoidBigDurationChange``` penalizes bigger duration changes between neighbor notes than 3, promoting relatively smooth transition.
+**No.11**  ```Fitness_LocalChange``` promotes corresponding local changes by rewarding 3 ascending or descending neighbor notes.
 
   
 
-**No.12**  ```Fitness_KeepInAnOctave``` promotes more notes to be placed within an octave by rewarding the max number of notes in an octave.
+**No.12**  ```Fitness_AvoidBigDurationChange``` penalizes bigger duration changes between neighbor notes than 3, promoting relatively smooth transition.
 
   
 
-**No.13**  ```Fitness_SimilarityBetweenBars``` promotes the similarity between bars by rewarding the proximity of means and vars of their intervals.
+**No.13**  ```Fitness_KeepInAnOctave``` promotes more notes to be placed within an octave by rewarding the max number of notes in an octave.
+
+  
+
+**No.14**  ```Fitness_SimilarityBetweenBars``` promotes the similarity between bars by rewarding the proximity of means and vars of their intervals.
 
   
 
@@ -153,7 +157,7 @@ We use **Heatmaps** to represent the fitness values of the population throughout
 
 ![Heatmap-example](./Results/Example-Heatmap.png)
 
-Additionally, we apply **UMAP** dimensionality reduction to represent each individual as a vector defined by 12 fitness function values and perform clustering analysis.
+Additionally, we apply **UMAP** dimensionality reduction to represent each individual as a vector defined by 14 fitness function values and perform clustering analysis.
 
 </b>
 
