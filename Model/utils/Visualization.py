@@ -21,20 +21,22 @@ class Heatmap:
         
         FitnessFunction = FitnessFunctions(self.individualLength, self.fitnessWeights)
         
+        print(populationRecord.shape)
+        
         for i in range(populationRecord.shape[0]):
             for j in range(populationRecord.shape[1]):
-                fitnessMatrix[i][j] = FitnessFunction.Fitness(populationRecord[i][j][:])
+                fitnessMatrix[i][j] = FitnessFunction.Fitness(populationRecord[i][j][:].tolist())
         
         # Plot:
         data = pd.DataFrame(fitnessMatrix)
         sns.heatmap(data)
         
-        plt.xlabel("Iterations",size=20)
-        plt.ylabel("Fitness",size=20,rotation=0)
+        plt.xlabel("Individuals",size=20)
+        plt.ylabel("Iterations",size=20,rotation=90)
         plt.title("Heatmap of Fitness of Individuals",size=20)
         
         plt.show()
-        plt.savefig('../../Result/' + self.fileName + '-Heatmap' + '.png', bbox_inches='tight')
+        # plt.savefig('../Results/' + self.fileName + '-Heatmap', bbox_inches='tight')
         
         
         
@@ -163,7 +165,7 @@ class FitnessFunctions:
                 bar.remove(0)
             while 28 in bar:
                 bar.remove(28)
-            if bar:
+            if len(bar)>0:
                 total_change = abs(bar[-1] - bar[0])
             else:
                 total_change = 0
