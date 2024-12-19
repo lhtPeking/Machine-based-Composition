@@ -6,7 +6,7 @@ from utils import Mapping, Heatmap, DR
 class GAmusic:
     def __init__(self,populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,
                  Flag_C,mutationRatio,crossoverRatio,transpositionRatio,inversionRatio,retrogradeRatio,
-                 maxIter,fitness_Iter,fitness_Final,fitnessWeights):
+                 maxIter,fitness_Iter,fitness_Final,fitnessWeights,fileName):
         self.populationSize = populationSize
         self.individualLength = individualLength
         
@@ -32,6 +32,8 @@ class GAmusic:
         self.populationRecord = [self.population[:]]
         
         self.fitnessWeights = fitnessWeights
+        
+        self.fileName = fileName
 
     def random_initial_population(self):
         group = []
@@ -47,8 +49,8 @@ class GAmusic:
                 break
         
         # 这里只针对选中的fitnessFunction进行Heatmap可视化, 但是降维的时候要考虑所有的fitnessFunction
-        Heatmap = Heatmap(self, self.populationRecord, self.fitnessFunction) 
-        Heatmap.draw()
+        heatmap = Heatmap(self.populationRecord, self.fitnessWeights, self.individualLength, self.fileName) 
+        heatmap.draw()
     
     def iterate(self):
         # Duplication: 高于fitness_Iter的个体复制到下一代

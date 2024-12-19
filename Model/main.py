@@ -17,12 +17,16 @@ def main():
     
     parser.add_argument('mutationRatio', type=float, help='The mutation strength during iteration.')
     parser.add_argument('crossoverRatio', type=float, help='The crossover strength during iteration.')
+    parser.add_argument('transpositionRatio', type=float, help='The transposition strength during iteration.')
+    parser.add_argument('inversionRatio', type=float, help='The inversion strength during iteration.')
+    parser.add_argument('retrogradeRatio', type=float, help='The retrograde strength during iteration.')
+    
     parser.add_argument('maxIter', type=int, help='The maximum number of iterations.')
     
     parser.add_argument('fitness_Iter', type=float, help='The fitness threshold for selection process.')
     parser.add_argument('fitness_Final', type=float, help='The fitness threshold for stop.')
     
-    parser.add_argument('fitnessFunction', type=str, help='The fitness function to be used.(A for A, B for B, etc.)')
+    parser.add_argument('fitnessWeights', type=float, nargs=13, help='The combination weights of fitness functions.')
     
     parser.add_argument('fileName', type=str, help='The name of the output file.')
     
@@ -39,19 +43,24 @@ def main():
     
     mutationRatio = args.mutationRatio
     crossoverRatio = args.crossoverRatio
+    transpositionRatio = args.transpositionRatio
+    inversionRatio = args.inversionRatio
+    retrogradeRatio = args.retrogradeRatio
+    
     maxIter = args.maxIter
     
     fitness_Iter = args.fitness_Iter
     fitness_Final = args.fitness_Final
     
-    fitnessFunction = args.fitnessFunction
+    fitnessWeights = args.fitnessWeights
     
     fileName = args.fileName
     
     print('Argument passing finished.')
     
     GA = GAmusic(populationSize,individualLength,Flag_M,Flag_T,Flag_I,Flag_R,Flag_C,
-                 mutationRatio,crossoverRatio,maxIter,fitness_Iter,fitness_Final,fitnessFunction,fileName)
+                 mutationRatio,crossoverRatio,transpositionRatio,inversionRatio,retrogradeRatio,
+                 maxIter,fitness_Iter,fitness_Final,fitnessWeights,fileName)
     
     GA.run(maxIter)
     

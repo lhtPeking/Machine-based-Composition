@@ -7,9 +7,9 @@ import math
 
 class Heatmap:
     # 对进化过程中个体的fitness值进行可视化
-    def __init__(self, populationRecord, fitnessFunction, individualLength, fileName):
+    def __init__(self, populationRecord, fitnessWeights, individualLength, fileName):
         self.populationRecord = populationRecord
-        self.fitnessFunction = fitnessFunction
+        self.fitnessWeights = fitnessWeights
         self.individualLength = individualLength
         self.fileName = fileName
         
@@ -19,40 +19,11 @@ class Heatmap:
         fitnessMatrix = np.zeros((populationRecord.shape[0],populationRecord.shape[1]))
         # dim(fitnessMatrix) = (maxIter, populationSize)
         
-        FitnessFunctions = FitnessFunctions(self.individualLength)
+        FitnessFunction = FitnessFunctions(self.individualLength, self.fitnessWeights)
         
         for i in range(populationRecord.shape[0]):
             for j in range(populationRecord.shape[1]):
-                if self.fitnessFunction == 'A':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_A(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'B':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_B(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'NormalStart':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_NormalStart(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'AvoidBigInterval':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidBigInterval(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'AvoidUnpreferredPitch':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidUnpreferredPitch(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'AvoidBigDurationChange':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidBigDurationChange(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'AvoidSyncopation':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidSyncopation(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'AvoidContinueUpOrDown':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidContinueUpOrDown(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'AvoidNoChange':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidNoChange(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'AvoidBigFluctuation':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidBigFluctuation(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'KeepInAnOctave':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_KeepInAnOctave(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'LocalChange':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_LocalChange(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'AvoidNoteRepetition':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_AvoidNoteRepetition(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'GoodInterval':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_GoodInterval(populationRecord[i][j][:])
-                elif self.fitnessFunction == 'SimilarityBetweenBars':
-                    fitnessMatrix[i][j] = FitnessFunctions.Fitness_SimilarityBetweenBars(populationRecord[i][j][:])
+                fitnessMatrix[i][j] = FitnessFunction.Fitness(populationRecord[i][j][:])
         
         # Plot:
         data = pd.DataFrame(fitnessMatrix)
@@ -107,38 +78,24 @@ class DR:
     
     
 class FitnessFunctions:
-    def __init__(self, individualLength):
+    def __init__(self, individualLength, fitnessWeights):
         self.individualLength = individualLength
+        self.fitnessWeights = fitnessWeights
     
-    def Fitness_A(self,individual): # 加权
-        return self.Fitness_AvoidBigDurationChange(individual)\
-                +self.Fitness_AvoidBigFluctuation(individual)\
-                +self.Fitness_AvoidBigInterval(individual)\
-                +self.Fitness_AvoidContinueUpOrDown(individual)\
-                +self.Fitness_AvoidNoChange(individual)\
-                +self.Fitness_AvoidNoteRepetition(individual)\
-                +self.Fitness_AvoidSyncopation(individual)\
-                +self.Fitness_AvoidUnpreferredPitch(individual)\
-                +self.Fitness_GoodInterval(individual)\
-                +self.Fitness_KeepInAnOctave(individual)\
-                +self.Fitness_LocalChange(individual)\
-                +self.Fitness_SimilarityBetweenBars(individual)\
-                +self.Fitness_NormalStart(individual)
-    
-    def Fitness_B(self,individual):
-        return self.Fitness_AvoidBigDurationChange(individual)\
-                +self.Fitness_AvoidBigFluctuation(individual)\
-                +self.Fitness_AvoidBigInterval(individual)\
-                +self.Fitness_AvoidContinueUpOrDown(individual)\
-                +self.Fitness_AvoidNoChange(individual)\
-                +self.Fitness_AvoidNoteRepetition(individual)\
-                +self.Fitness_AvoidSyncopation(individual)\
-                +self.Fitness_AvoidUnpreferredPitch(individual)\
-                +self.Fitness_GoodInterval(individual)\
-                +self.Fitness_KeepInAnOctave(individual)\
-                +self.Fitness_LocalChange(individual)\
-                +self.Fitness_SimilarityBetweenBars(individual)\
-                +self.Fitness_NormalStart(individual)
+    def Fitness(self,individual): # 加权
+        return self.Fitness_NormalStart(individual) * self.fitnessWeights[0]\
+                +self.Fitness_AvoidUnpreferredPitch(individual) * self.fitnessWeights[1]\
+                +self.Fitness_AvoidSyncopation(individual) * self.fitnessWeights[2]\
+                +self.Fitness_AvoidBigInterval(individual) * self.fitnessWeights[3]\
+                +self.Fitness_GoodInterval(individual) * self.fitnessWeights[4]\
+                +self.Fitness_AvoidBigFluctuation(individual) * self.fitnessWeights[5]\
+                +self.Fitness_AvoidContinueUpOrDown(individual) * self.fitnessWeights[6]\
+                +self.Fitness_AvoidNoteRepetition(individual) * self.fitnessWeights[7]\
+                +self.Fitness_AvoidNoChange(individual) * self.fitnessWeights[8]\
+                +self.Fitness_LocalChange(individual) * self.fitnessWeights[9]\
+                +self.Fitness_AvoidBigDurationChange(individual) * self.fitnessWeights[10]\
+                +self.Fitness_KeepInAnOctave(individual) * self.fitnessWeights[11]\
+                +self.Fitness_SimilarityBetweenBars(individual) * self.fitnessWeights[12]
     
     def Fitness_NormalStart(self,individual):
         if individual[0] in [0,28]:
@@ -201,16 +158,15 @@ class FitnessFunctions:
         n = self.individualLength
         score = 0
         for i in [0,8,16,24]:
-            a=i
-            b=i+7
-            while individual[a] in [0,28]:
-                a += 1
-            if a >= b:
-                total_change = 0
+            bar = individual[i:i+8]
+            while 0 in bar:
+                bar.remove(0)
+            while 28 in bar:
+                bar.remove(28)
+            if bar:
+                total_change = abs(bar[-1] - bar[0])
             else:
-                while individual[b] in [0,28]:
-                    b -= 1
-                total_change = abs(individual[i+7] - individual[i])
+                total_change = 0
             if total_change < 8:
                 score += 1
         return score/4
@@ -289,7 +245,7 @@ class FitnessFunctions:
             elif individual[i] != 0:
                 last_one = individual[i]
                 repetition.append(1)
-        return -max(repetition)/n
+        return 1 - max(repetition)/n
     
     def Fitness_GoodInterval(self,individual):
         n = self.individualLength
@@ -349,6 +305,7 @@ class FitnessFunctions:
         mean4 = np.mean(intervals4)
         var4 = np.var(intervals4)
 
-        mean_std = np.std([mean1,mean2,mean3,mean4])
-        var_std = np.std([var1,var2,var3,var4])
-        return - mean_std - var_std
+        mean_var = np.var([mean1,mean2,mean3,mean4])
+        var_var = np.var([var1,var2,var3,var4])
+
+        return (np.exp(-mean_var) + np.exp(-var_var))/2
