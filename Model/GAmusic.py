@@ -25,13 +25,15 @@ class GAmusic:
         
         self.fitness_Iter = fitness_Iter
         self.fitness_Final = fitness_Final
+
+        self.fitnessWeights = fitnessWeights
         
         self.initialPopulation = self.random_initial_population()
+        self.initialPopulation.sort(key=lambda individual: self.Fitness(individual), reverse=True)
+
         self.population = self.initialPopulation[:]
         
         self.populationRecord = [self.population[:]]
-        
-        self.fitnessWeights = fitnessWeights
         
         self.fileName = fileName
 
@@ -49,11 +51,16 @@ class GAmusic:
                 break
         
         # 这里只针对选中的fitnessFunction进行Heatmap可视化, 但是降维的时候要考虑所有的fitnessFunction
-        # heatmap = Heatmap(self.populationRecord, self.fitnessWeights, self.individualLength, self.fileName) 
-        # heatmap.draw()
+        heatmap = Heatmap(self.populationRecord, self.fitnessWeights, self.individualLength, self.fileName) 
+        heatmap.draw()
         
         umap = DR(self.population,self.fitnessWeights, self.individualLength, self.fileName)
         umap.analyze()
+
+        for i in range(5):
+            individual = self.population[i-1]
+            music = Mapping(individual,self.fileName,i)
+            music.generate()
     
     def iterate(self):
         # Duplication: 高于fitness_Iter的个体复制到下一代
@@ -384,3 +391,5 @@ class GAmusic:
         return (np.exp(-mean_var) + np.exp(-var_var))/2
 
 
+model = GAmusic(20,32,1,1,1,1,1,0.1,0.1,0.1,0.1,0.1,10,4,8,[1 for i in range(13)],'output1')
+model.run(10)
