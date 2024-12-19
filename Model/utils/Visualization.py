@@ -37,9 +37,8 @@ class Heatmap:
         plt.ylabel("Iterations",size=20,rotation=90)
         plt.title("Heatmap of Fitness of Individuals",size=20)
         
+        plt.savefig('../Results/' + self.fileName + '/Heatmap.png', bbox_inches='tight')
         plt.show()
-        plt.savefig('../Result/' + self.fileName + '/Heatmap.png', bbox_inches='tight')
-        
         
         
 class DR:
@@ -53,24 +52,25 @@ class DR:
     def analyze(self):
         Population = np.array(self.Population)
         # dim(Population) = (populationSize, individualLength)
-        Vectors = np.zeros((Population.shape[0],13))
+        Vectors = np.zeros((Population.shape[0],14))
         
         FitnessFunction = FitnessFunctions(self.individualLength, self.fitnessWeights)
         
         for i in range(Population.shape[0]):
             Vectors[i][0] = FitnessFunction.Fitness_NormalStart(Population[i][:].tolist())
-            Vectors[i][1] = FitnessFunction.Fitness_AvoidUnpreferredPitch(Population[i][:].tolist())
-            Vectors[i][2] = FitnessFunction.Fitness_AvoidSyncopation(Population[i][:].tolist())
-            Vectors[i][3] = FitnessFunction.Fitness_AvoidBigInterval(Population[i][:].tolist())
-            Vectors[i][4] = FitnessFunction.Fitness_GoodInterval(Population[i][:].tolist())
-            Vectors[i][5] = FitnessFunction.Fitness_AvoidBigFluctuation(Population[i][:].tolist())
-            Vectors[i][6] = FitnessFunction.Fitness_AvoidContinueUpOrDown(Population[i][:].tolist())
-            Vectors[i][7] = FitnessFunction.Fitness_AvoidNoteRepetition(Population[i][:].tolist())
-            Vectors[i][8] = FitnessFunction.Fitness_AvoidNoChange(Population[i][:].tolist())
-            Vectors[i][9] = FitnessFunction.Fitness_LocalChange(Population[i][:].tolist())
-            Vectors[i][10] = FitnessFunction.Fitness_AvoidBigDurationChange(Population[i][:].tolist())
-            Vectors[i][11] = FitnessFunction.Fitness_KeepInAnOctave(Population[i][:].tolist())
-            Vectors[i][12] = FitnessFunction.Fitness_SimilarityBetweenBars(Population[i][:].tolist())
+            Vectors[i][1] = FitnessFunction.Fitness_BarEnd(Population[i][:].tolist())
+            Vectors[i][2] = FitnessFunction.Fitness_AvoidUnpreferredPitch(Population[i][:].tolist())
+            Vectors[i][3] = FitnessFunction.Fitness_AvoidSyncopation(Population[i][:].tolist())
+            Vectors[i][4] = FitnessFunction.Fitness_AvoidBigInterval(Population[i][:].tolist())
+            Vectors[i][5] = FitnessFunction.Fitness_GoodInterval(Population[i][:].tolist())
+            Vectors[i][6] = FitnessFunction.Fitness_AvoidBigFluctuation(Population[i][:].tolist())
+            Vectors[i][7] = FitnessFunction.Fitness_AvoidContinueUpOrDown(Population[i][:].tolist())
+            Vectors[i][8] = FitnessFunction.Fitness_AvoidNoteRepetition(Population[i][:].tolist())
+            Vectors[i][9] = FitnessFunction.Fitness_AvoidNoChange(Population[i][:].tolist())
+            Vectors[i][10] = FitnessFunction.Fitness_LocalChange(Population[i][:].tolist())
+            Vectors[i][11] = FitnessFunction.Fitness_AvoidBigDurationChange(Population[i][:].tolist())
+            Vectors[i][12] = FitnessFunction.Fitness_KeepInAnOctave(Population[i][:].tolist())
+            Vectors[i][13] = FitnessFunction.Fitness_SimilarityBetweenBars(Population[i][:].tolist())
         
         reducer = umap.UMAP(n_components=2, n_neighbors=10, random_state=42) # n_neighbors可以尝试调整
         embedding = reducer.fit_transform(Vectors)
@@ -88,10 +88,8 @@ class DR:
         
         plt.colorbar(scatter, ticks=range(n_clusters), label='Cluster')
         
+        plt.savefig('../Results/' + self.fileName + '/UMAP.png', bbox_inches='tight')
         plt.show()
-        
-        plt.savefig('../Result/' + self.fileName + '/UMAP.png', bbox_inches='tight')
-    
     
     
 class FitnessFunctions:
@@ -101,19 +99,27 @@ class FitnessFunctions:
     
     def Fitness(self,individual): # 加权
         return self.Fitness_NormalStart(individual) * self.fitnessWeights[0]\
-                +self.Fitness_AvoidUnpreferredPitch(individual) * self.fitnessWeights[1]\
-                +self.Fitness_AvoidSyncopation(individual) * self.fitnessWeights[2]\
-                +self.Fitness_AvoidBigInterval(individual) * self.fitnessWeights[3]\
-                +self.Fitness_GoodInterval(individual) * self.fitnessWeights[4]\
-                +self.Fitness_AvoidBigFluctuation(individual) * self.fitnessWeights[5]\
-                +self.Fitness_AvoidContinueUpOrDown(individual) * self.fitnessWeights[6]\
-                +self.Fitness_AvoidNoteRepetition(individual) * self.fitnessWeights[7]\
-                +self.Fitness_AvoidNoChange(individual) * self.fitnessWeights[8]\
-                +self.Fitness_LocalChange(individual) * self.fitnessWeights[9]\
-                +self.Fitness_AvoidBigDurationChange(individual) * self.fitnessWeights[10]\
-                +self.Fitness_KeepInAnOctave(individual) * self.fitnessWeights[11]\
-                +self.Fitness_SimilarityBetweenBars(individual) * self.fitnessWeights[12]
+                +self.Fitness_BarEnd(individual) * self.fitnessWeights[1]\
+                +self.Fitness_AvoidUnpreferredPitch(individual) * self.fitnessWeights[2]\
+                +self.Fitness_AvoidSyncopation(individual) * self.fitnessWeights[3]\
+                +self.Fitness_AvoidBigInterval(individual) * self.fitnessWeights[4]\
+                +self.Fitness_GoodInterval(individual) * self.fitnessWeights[5]\
+                +self.Fitness_AvoidBigFluctuation(individual) * self.fitnessWeights[6]\
+                +self.Fitness_AvoidContinueUpOrDown(individual) * self.fitnessWeights[7]\
+                +self.Fitness_AvoidNoteRepetition(individual) * self.fitnessWeights[8]\
+                +self.Fitness_AvoidNoChange(individual) * self.fitnessWeights[9]\
+                +self.Fitness_LocalChange(individual) * self.fitnessWeights[10]\
+                +self.Fitness_AvoidBigDurationChange(individual) * self.fitnessWeights[11]\
+                +self.Fitness_KeepInAnOctave(individual) * self.fitnessWeights[12]\
+                +self.Fitness_SimilarityBetweenBars(individual) * self.fitnessWeights[13]
     
+    def Fitness_BarEnd(self,individual):
+        score = 0
+        for i in [7,15,23,31]:
+            if individual[i] in [0,28]:
+                score += 1
+        return score/4
+
     def Fitness_NormalStart(self,individual):
         if individual[0] in [0,28]:
             return 0
@@ -136,14 +142,17 @@ class FitnessFunctions:
     
     def Fitness_AvoidUnpreferredPitch(self,individual):
         n = self.individualLength
-        preferred_pitches = []
+        unpreferred_pitches = [1,7,13,19,25]
         score = 0
+        last_one = 100
         for i in range(n):
-            if individual[i] in preferred_pitches:
+            if individual[i] != 28:
+                last_one = individual[i]
+                if individual[i] in unpreferred_pitches:
+                    score += 1
+            elif individual[i] == 28 and last_one in unpreferred_pitches:
                 score += 1
-            else:
-                score -= 1
-        return score/n
+        return 1 - score/n
     
     def Fitness_AvoidBigDurationChange(self,individual):
         n = self.individualLength
@@ -180,7 +189,7 @@ class FitnessFunctions:
                 bar.remove(0)
             while 28 in bar:
                 bar.remove(28)
-            if len(bar)>0:
+            if bar:
                 total_change = abs(bar[-1] - bar[0])
             else:
                 total_change = 0
