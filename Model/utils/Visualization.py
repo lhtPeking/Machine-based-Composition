@@ -1,4 +1,6 @@
 import numpy as np
+import umap
+from sklearn.cluster import KMeans
 from matplotlib import pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -42,40 +44,53 @@ class Heatmap:
         
 class DR:
     # UMAP降维分析:以12个不同的fitness函数值组成向量,观察不同fitness评价指标下完成迭代时的个体分布
-    def __init__(self, Population, fileName):
-        self.Population = Polulation
+    def __init__(self, Population, fitnessWeights, individualLength, fileName):
+        self.Population = Population
+        self.fitnessWeights = fitnessWeights
+        self.individualLength = individualLength
         self.fileName = fileName
 
     def analyze(self):
         Population = np.array(self.Population)
         # dim(Population) = (populationSize, individualLength)
-        Vectors = np.zeros((Population.shape[0],12))
+        Vectors = np.zeros((Population.shape[0],13))
+        
+        FitnessFunction = FitnessFunctions(self.individualLength, self.fitnessWeights)
+        
         for i in range(Population.shape[0]):
-            Vectors[i][0] = FitnessFunctions.Fitness_A(Population[i][:])
-            Vectors[i][1] = FitnessFunctions.Fitness_B(Population[i][:])
-            Vectors[i][2] = FitnessFunctions.Fitness_NormalStart(Population[i][:])
-            Vectors[i][3] = FitnessFunctions.Fitness_AvoidBigInterval(Population[i][:])
-            Vectors[i][4] = FitnessFunctions.Fitness_AvoidUnpreferredPitch(Population[i][:])
-            Vectors[i][5] = FitnessFunctions.Fitness_AvoidBigDurationChange(Population[i][:])
-            Vectors[i][6] = FitnessFunctions.Fitness_AvoidSyncopation(Population[i][:])
-            Vectors[i][7] = FitnessFunctions.Fitness_AvoidContinueUpOrDown(Population[i][:])
-            Vectors[i][8] = FitnessFunctions.Fitness_AvoidNoChange(Population[i][:])
-            Vectors[i][9] = FitnessFunctions.Fitness_AvoidBigFluctuation(Population[i][:])
-            Vectors[i][10] = FitnessFunctions.Fitness_KeepInAnOctave(Population[i][:])
-            Vectors[i][11] = FitnessFunctions.Fitness_LocalChange(Population[i][:])
+            Vectors[i][0] = FitnessFunction.Fitness_NormalStart(Population[i][:].tolist())
+            Vectors[i][1] = FitnessFunction.Fitness_AvoidUnpreferredPitch(Population[i][:].tolist())
+            Vectors[i][2] = FitnessFunction.Fitness_AvoidSyncopation(Population[i][:].tolist())
+            Vectors[i][3] = FitnessFunction.Fitness_AvoidBigInterval(Population[i][:].tolist())
+            Vectors[i][4] = FitnessFunction.Fitness_GoodInterval(Population[i][:].tolist())
+            Vectors[i][5] = FitnessFunction.Fitness_AvoidBigFluctuation(Population[i][:].tolist())
+            Vectors[i][6] = FitnessFunction.Fitness_AvoidContinueUpOrDown(Population[i][:].tolist())
+            Vectors[i][7] = FitnessFunction.Fitness_AvoidNoteRepetition(Population[i][:].tolist())
+            Vectors[i][8] = FitnessFunction.Fitness_AvoidNoChange(Population[i][:].tolist())
+            Vectors[i][9] = FitnessFunction.Fitness_LocalChange(Population[i][:].tolist())
+            Vectors[i][10] = FitnessFunction.Fitness_AvoidBigDurationChange(Population[i][:].tolist())
+            Vectors[i][11] = FitnessFunction.Fitness_KeepInAnOctave(Population[i][:].tolist())
+            Vectors[i][12] = FitnessFunction.Fitness_SimilarityBetweenBars(Population[i][:].tolist())
         
         reducer = umap.UMAP(n_components=2, n_neighbors=10, random_state=42) # n_neighbors可以尝试调整
         embedding = reducer.fit_transform(Vectors)
         
+        n_clusters = 5
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+        labels = kmeans.fit_predict(embedding)
+        
         plt.figure(figsize=(8, 6))
-        plt.scatter(embedding[:, 0], embedding[:, 1], s=30, c='blue', alpha=0.7)
-        plt.title("UMAP of the Final Population",size=20)
+        scatter = plt.scatter(embedding[:, 0], embedding[:, 1], s=30, c=labels, cmap='viridis', alpha=0.7)
+        plt.title("UMAP of the Final Musical Population with K-Means Clustering(K=5)", size=12)
         plt.xlabel("UMAP Dimension 1")
         plt.ylabel("UMAP Dimension 2")
         plt.grid(True)
+        
+        plt.colorbar(scatter, ticks=range(n_clusters), label='Cluster')
+        
         plt.show()
         
-        plt.savefig('../../Result/' + self.fileName + '-UMAP' + '.png', bbox_inches='tight')
+        # plt.savefig('../../Result/' + self.fileName + '-UMAP' + '.png', bbox_inches='tight')
     
     
     

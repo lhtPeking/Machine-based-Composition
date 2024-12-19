@@ -49,8 +49,11 @@ class GAmusic:
                 break
         
         # 这里只针对选中的fitnessFunction进行Heatmap可视化, 但是降维的时候要考虑所有的fitnessFunction
-        heatmap = Heatmap(self.populationRecord, self.fitnessWeights, self.individualLength, self.fileName) 
-        heatmap.draw()
+        # heatmap = Heatmap(self.populationRecord, self.fitnessWeights, self.individualLength, self.fileName) 
+        # heatmap.draw()
+        
+        umap = DR(self.population,self.fitnessWeights, self.individualLength, self.fileName)
+        umap.analyze()
     
     def iterate(self):
         # Duplication: 高于fitness_Iter的个体复制到下一代
