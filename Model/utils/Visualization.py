@@ -23,7 +23,7 @@ class Heatmap:
         
         FitnessFunction = FitnessFunctions(self.individualLength, self.fitnessWeights)
         
-        print(populationRecord.shape)
+        #print(populationRecord.shape)
         
         for i in range(populationRecord.shape[0]):
             for j in range(populationRecord.shape[1]):
@@ -38,7 +38,7 @@ class Heatmap:
         plt.title("Heatmap of Fitness of Individuals",size=20)
         
         plt.show()
-        # plt.savefig('../Results/' + self.fileName + '-Heatmap', bbox_inches='tight')
+        plt.savefig('../Result/' + self.fileName + '/Heatmap.png', bbox_inches='tight')
         
         
         
@@ -90,7 +90,7 @@ class DR:
         
         plt.show()
         
-        # plt.savefig('../../Result/' + self.fileName + '-UMAP' + '.png', bbox_inches='tight')
+        plt.savefig('../Result/' + self.fileName + '/UMAP.png', bbox_inches='tight')
     
     
     
