@@ -39,7 +39,7 @@ cd  Model
 
 ```
 
-The format for entering commands:
+**The format for entering commands:**
 
 ```python main.py [populationSize] [individualLength] [Flag_M：Do mutation or not.(1 for yes, 0 for no)] [Flag_T：Do transposition or not.(1 for yes, 0 for no)] [Flag_I：Do inversion or not.(1 for yes, 0 for no)] [Flag_R：Do retrograde or not.(1 for yes, 0 for no)] [Flag_C：Do crossover or not.(1 for yes, 0 for no)] [mutationRatio] [crossoverRatio] [transpositionRatio] [inversionRatio] [retrogradeRatio] [maxIter] [fitness_Iter] [fitness_Final] [fitnessWeights_NormalStart] [fitnessWeights_BarEnd] [fitnessWeights_AvoidUnpreferredPitch] [fitnessWeights_AvoidSyncopation] [fitnessWeights_AvoidBigInterval] [fitnessWeights_GoodInterval] [fitnessWeights_AvoidBigFluctuation] [fitnessWeights_AvoidContinueUpOrDown] [fitnessWeights_AvoidNoteRepetition] [fitnessWeights_AvoidNoChange] [fitnessWeights_LocalChange] [fitnessWeights_AvoidBigDurationChange] [fitnessWeights_KeepInAnOctave] [fitnessWeights_SimilarityBetweenBars] [fileName]```
 

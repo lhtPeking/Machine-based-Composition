@@ -75,6 +75,18 @@ class DR:
         reducer = umap.UMAP(n_components=2, n_neighbors=10, random_state=42) # n_neighbors可以尝试调整
         embedding = reducer.fit_transform(Vectors)
         
+        
+        data = pd.DataFrame(Vectors)
+        sns.heatmap(data)
+        
+        plt.xlabel("Fitness score of each function",size=20)
+        plt.ylabel("Individuals",size=20,rotation=90)
+        plt.title("Heatmap of Fitness of the Final Population",size=15)
+        
+        plt.savefig('../Results/' + self.fileName + '/Heatmap-finalPopulation.png', bbox_inches='tight')
+        plt.show()
+        
+        
         n_clusters = 5
         kmeans = KMeans(n_clusters=n_clusters, random_state=42)
         labels = kmeans.fit_predict(embedding)
