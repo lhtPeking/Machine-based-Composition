@@ -165,9 +165,9 @@ Additionally, we apply **UMAP** dimensionality reduction to represent each indiv
 
 </b>
 
-And also its companion heatmap, which provides additional insights:
+And also its companion heatmap, which provides additional insights into the **characteristics** of a piece of music.
 </b>
-![UMAP-example](./Results/Example-Heatmap-add.png)
+![UMAP-example](./Results/Example-Heatmap-additional.png)
 </b>
 
 ## Results 📋

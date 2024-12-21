@@ -79,8 +79,8 @@ class DR:
         data = pd.DataFrame(Vectors)
         sns.heatmap(data)
         
-        plt.xlabel("Fitness score of each function",size=20)
-        plt.ylabel("Individuals",size=20,rotation=90)
+        plt.xlabel("Fitness score of each function",size=15)
+        plt.ylabel("Individuals",size=15,rotation=90)
         plt.title("Heatmap of Fitness of the Final Population",size=15)
         
         plt.savefig('../Results/' + self.fileName + '/Heatmap-finalPopulation.png', bbox_inches='tight')
