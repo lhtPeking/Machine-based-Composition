@@ -165,6 +165,11 @@ Additionally, we apply **UMAP** dimensionality reduction to represent each indiv
 
 </b>
 
+And also its companion heatmap, which provides additional insights:
+</b>
+![UMAP-example](./Results/Example-Heatmap-add.png)
+</b>
+
 ## Results 📋
 We conducted numerous experiments and detailed analyses on the various hyperparameters selected for the entire model. Our focus was on studying the impact of the choice of the fitness function on genetic iterations. The specific research report can be found in the ```Reports``` folder.
   
