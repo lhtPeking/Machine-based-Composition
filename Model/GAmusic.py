@@ -41,10 +41,15 @@ class GAmusic:
         os.makedirs('../Results/' + self.fileName)
 
     def random_initial_population(self):
+        random.seed(40)
         group = []
+        # 0: 休止符, 1-27: 音符, 28: 延音符
+        weights = [1] * 29  # 初始化所有音符的权重为1
+        weights[28] = 5     # 将延音符的权重设置为5，增加其出现的概率
         for i in range(self.populationSize):
             # F3到G5, 0作为休止符, 1-27作为音符, 28为延音符 
-            group.append(random.choices(range(29),k=self.individualLength))
+            group.append(random.choices(range(29),weights=weights, k=self.individualLength))
+        # print(group)
         return group
     
     def run(self,maxIter):
@@ -60,10 +65,11 @@ class GAmusic:
         umap = DR(self.population,self.fitnessWeights, self.individualLength, self.fileName)
         umap.analyze()
 
-        for i in range(5):
-            individual = self.population[i]
-            music = Mapping(individual,self.fileName,i+1)
-            music.generate()
+        # # music generation
+        # for i in range(5):
+        #     individual = self.population[i]
+        #     music = Mapping(individual,self.fileName,i+1)
+        #     music.generate()
     
     def iterate(self):
         # Duplication: 高于fitness_Iter的个体复制到下一代
@@ -154,9 +160,11 @@ class GAmusic:
     def selection(self):
         weights = []
         for individual in self.population:
-            weights.append(self.Fitness(individual))
+            weights.append(np.exp(4*self.Fitness(individual))) 
+            # weights.append(1) #negative control
         weights = np.array(weights)
         possibilities = weights/np.sum(weights)
+        # print(possibilities)
         indices = np.arange(len(self.population))
         chosen_indices = np.random.choice(indices,size=self.populationSize,replace=False,p=possibilities)
         chosen_population = [self.population[i] for i in chosen_indices]
@@ -177,9 +185,8 @@ class GAmusic:
                 +self.Fitness_AvoidNoteRepetition(individual) * self.fitnessWeights[8]\
                 +self.Fitness_AvoidNoChange(individual) * self.fitnessWeights[9]\
                 +self.Fitness_LocalChange(individual) * self.fitnessWeights[10]\
-                +self.Fitness_AvoidBigDurationChange(individual) * self.fitnessWeights[11]\
-                +self.Fitness_KeepInAnOctave(individual) * self.fitnessWeights[12]\
-                +self.Fitness_SimilarityBetweenBars(individual) * self.fitnessWeights[13]
+                +self.Fitness_KeepInAnOctave(individual) * self.fitnessWeights[11]\
+                +self.Fitness_SimilarityBetweenBars(individual) * self.fitnessWeights[12]
     
     def Fitness_BarEnd(self,individual):
         score = 0
@@ -210,7 +217,7 @@ class GAmusic:
     
     def Fitness_AvoidUnpreferredPitch(self,individual):
         n = self.individualLength
-        unpreferred_pitches = [1,7,13,19,25]
+        unpreferred_pitches = [2,4,6,9,11,14,16,18,21,23,26]
         score = 0
         last_one = 100
         for i in range(n):
@@ -222,22 +229,22 @@ class GAmusic:
                 score += 1
         return 1 - score/n
     
-    def Fitness_AvoidBigDurationChange(self,individual):
-        n = self.individualLength
-        score = 0
-        total = 0
-        durations = []
-        for i in range(n):
-            if individual[i] != 28:
-                durations.append(1)
-            elif durations:
-                durations[-1] += 1
-        for j in range(len(durations)-1):
-            change = abs(durations[j+1] - durations[j])
-            total += 1
-            if change < 4:
-                score += 1
-        return score/total
+    # def Fitness_AvoidBigDurationChange(self,individual):
+    #     n = self.individualLength
+    #     score = 0
+    #     total = 0
+    #     durations = []
+    #     for i in range(n):
+    #         if individual[i] != 28:
+    #             durations.append(1)
+    #         elif durations:
+    #             durations[-1] += 1
+    #     for j in range(len(durations)-1):
+    #         change = abs(durations[j+1] - durations[j])
+    #         total += 1
+    #         if change < 4:
+    #             score += 1
+    #     return score/total
     
     def Fitness_AvoidSyncopation(self,individual):
         score = 0
@@ -279,10 +286,12 @@ class GAmusic:
                 unchanged[-1] += 1
             else:
                 unchanged.append(1)
-        if max(unchanged) < 4:
-            return 1
-        else:
-            return 0
+        # if max(unchanged) < 4:
+        #     return 1
+        # else:
+        #     return 0
+        return np.exp(-max(unchanged)/4)
+        
         
     def Fitness_AvoidBigFluctuation(self,individual):
         n = self.individualLength
@@ -297,10 +306,9 @@ class GAmusic:
         for interval in intervals:
             fluctuation += (abs(interval)-average_interval)**2
         fluctuation = math.sqrt(fluctuation/len(intervals))
-        if fluctuation < 1:
-            return 1
-        else:
-            return 0
+        fluctuation = np.sqrt(fluctuation)
+        # print(fluctuation)
+        return np.exp(-fluctuation/25)
     
     def Fitness_KeepInAnOctave(self,individual):
         n = self.individualLength
@@ -339,7 +347,7 @@ class GAmusic:
             elif individual[i] != 0:
                 last_one = individual[i]
                 repetition.append(1)
-        return 1 - max(repetition)/n
+        return np.exp(-max(repetition)/4)
     
     def Fitness_GoodInterval(self,individual):
         n = self.individualLength
@@ -402,4 +410,4 @@ class GAmusic:
         mean_var = np.var([mean1,mean2,mean3,mean4])
         var_var = np.var([var1,var2,var3,var4])
 
-        return (np.exp(-mean_var) + np.exp(-var_var))/2
+        return (np.exp(-mean_var*2) + np.exp(-var_var*2))/2
